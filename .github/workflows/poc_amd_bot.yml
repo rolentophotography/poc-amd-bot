@@ -1,1 +1,43 @@
+name: POC AMD Bot
 
+# Runs completely independently of any other trading bot workflow in this
+# repo (different file, different schedule, different secrets, different
+# trade_log.csv). Safe to add alongside an existing bot's .yml file.
+
+on:
+  schedule:
+    # Every 30 minutes, 9:30am-4:00pm US/Eastern (13:30-20:00 UTC), Mon-Fri.
+    # Adjust the UTC hours if you want to match your existing bot's exact
+    # cadence, or to account for daylight saving shifts.
+    - cron: "0,30 13-20 * * 1-5"
+  workflow_dispatch: {}   # lets you trigger a manual run from the Actions tab
+
+jobs:
+  run-poc-amd-bot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install alpaca-py pandas numpy
+
+      - name: Run POC/AMD bot
+        env:
+          POC_AMD_ALPACA_API_KEY: ${{ secrets.POC_AMD_ALPACA_API_KEY }}
+          POC_AMD_ALPACA_SECRET_KEY: ${{ secrets.POC_AMD_ALPACA_SECRET_KEY }}
+        run: python poc_amd_bot.py
+
+      # Commit the trade log back to the repo so history persists across runs
+      # (GitHub Actions runners are ephemeral - without this, trade_log.csv
+      # would be lost after every run).
+      - name: Commit trade log
+        run: |
+          git config user.name "poc-amd-bot"
+          git config user.email "actions@github.com"
+          git add trade_log.csv
+          git diff --cached --quiet || git commit -m "Update trade log [skip ci]"
+          git push
