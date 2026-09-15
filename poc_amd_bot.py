@@ -52,7 +52,7 @@ from alpaca.data.enums import DataFeed
 
 from poc_amd_strategy import PocAmdStrategy, PocAmdParams
 
-DEFAULT_SYMBOLS = ["AAPL", "SPY", "QQQ", "GOOGL", "AMD"]
+DEFAULT_SYMBOLS = ["AAPL", "SPY", "QQQ", "GOOGL", "AMD", "TSLA", "NVDA", "COIN", "PLTR", "SMCI"]
 TRADE_LOG_PATH = os.path.join(os.path.dirname(__file__), "trade_log.csv")
 LOOKBACK_BARS = 400  # enough history for swing/volume-profile detection
 QTY_PER_TRADE = 1    # bump this once you've validated results; start small
