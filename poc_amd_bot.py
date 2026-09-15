@@ -132,6 +132,14 @@ def submit_bracket_order(trading_client: TradingClient, symbol: str, side: str,
 
 def run():
     trading_client, data_client = get_clients()
+
+    clock = trading_client.get_clock()
+    if not clock.is_open:
+        print(f"Market is closed (next open: {clock.next_open}). Skipping this run entirely - "
+              f"no data has changed since the last run, so re-evaluating now would just "
+              f"re-detect the same signal and risk duplicate orders.")
+        return
+
     symbols = os.environ.get("POC_AMD_SYMBOLS", ",".join(DEFAULT_SYMBOLS)).split(",")
     strategy = PocAmdStrategy(PocAmdParams())
 
