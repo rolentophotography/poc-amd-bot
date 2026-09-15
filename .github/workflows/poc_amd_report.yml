@@ -1,0 +1,44 @@
+name: POC AMD Report
+
+# Independent of poc_amd_bot.yml - only reads data, never places trades.
+# Generates REPORT.md in the repo root so you can just look at GitHub,
+# no need to run anything locally.
+
+on:
+  schedule:
+    - cron: "0 21 * * 1-5"   # once a day, 9pm UTC (after US market close), Mon-Fri
+  workflow_dispatch: {}       # manual "Run workflow" button any time you want a fresh check
+
+jobs:
+  run-report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install alpaca-py
+
+      - name: Generate report
+        env:
+          POC_AMD_ALPACA_API_KEY: ${{ secrets.POC_AMD_ALPACA_API_KEY }}
+          POC_AMD_ALPACA_SECRET_KEY: ${{ secrets.POC_AMD_ALPACA_SECRET_KEY }}
+        run: |
+          echo "# POC/AMD Strategy Report" > REPORT.md
+          echo "" >> REPORT.md
+          echo "Last updated: $(date -u '+%Y-%m-%d %H:%M UTC')" >> REPORT.md
+          echo "" >> REPORT.md
+          echo '```' >> REPORT.md
+          python poc_amd_report.py >> REPORT.md
+          echo '```' >> REPORT.md
+
+      - name: Commit report
+        run: |
+          git config user.name "poc-amd-bot"
+          git config user.email "actions@github.com"
+          git add REPORT.md
+          git diff --cached --quiet || git commit -m "Update report [skip ci]"
+          git push
