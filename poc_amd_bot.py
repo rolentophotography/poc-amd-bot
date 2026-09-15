@@ -43,8 +43,8 @@ from datetime import datetime, timedelta, timezone
 
 import pandas as pd
 from alpaca.trading.client import TradingClient
-from alpaca.trading.requests import MarketOrderRequest, TakeProfitRequest, StopLossRequest
-from alpaca.trading.enums import OrderSide, TimeInForce, OrderClass
+from alpaca.trading.requests import MarketOrderRequest, TakeProfitRequest, StopLossRequest, GetOrdersRequest
+from alpaca.trading.enums import OrderSide, TimeInForce, OrderClass, QueryOrderStatus
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
@@ -94,6 +94,18 @@ def has_open_position(trading_client: TradingClient, symbol: str) -> bool:
         return False  # no position exists -> Alpaca raises, which is expected
 
 
+def has_pending_order(trading_client: TradingClient, symbol: str) -> bool:
+    """True if there's already an open/unfilled order (e.g. a bracket order
+    submitted while markets were closed, still waiting to fill) for this
+    symbol. Without this check, running the bot repeatedly while markets are
+    closed would queue up duplicate orders, since has_open_position() only
+    catches FILLED positions, not orders still waiting to fill."""
+    orders = trading_client.get_orders(
+        GetOrdersRequest(status=QueryOrderStatus.OPEN, symbols=[symbol])
+    )
+    return len(orders) > 0
+
+
 def log_trade(row: dict):
     file_exists = os.path.isfile(TRADE_LOG_PATH)
     with open(TRADE_LOG_PATH, "a", newline="") as f:
@@ -138,8 +150,8 @@ def run():
             print(f"[{symbol}] no signal this bar")
             continue
 
-        if has_open_position(trading_client, symbol):
-            print(f"[{symbol}] signal={latest['signal']} but position already open, skipping")
+        if has_open_position(trading_client, symbol) or has_pending_order(trading_client, symbol):
+            print(f"[{symbol}] signal={latest['signal']} but position/order already open, skipping")
             continue
 
         try:
