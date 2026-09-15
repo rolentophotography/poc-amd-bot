@@ -48,6 +48,7 @@ from alpaca.trading.enums import OrderSide, TimeInForce, OrderClass
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
+from alpaca.data.enums import DataFeed
 
 from poc_amd_strategy import PocAmdStrategy, PocAmdParams
 
@@ -73,6 +74,7 @@ def fetch_bars(data_client: StockHistoricalDataClient, symbol: str) -> pd.DataFr
         timeframe=TimeFrame(30, TimeFrameUnit.Minute),
         start=start,
         end=end,
+        feed=DataFeed.IEX,  # paper/free accounts only have access to IEX, not SIP
     )
     bars = data_client.get_stock_bars(req).df
     if bars.empty:
