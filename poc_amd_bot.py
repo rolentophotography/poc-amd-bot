@@ -47,7 +47,7 @@ from alpaca.trading.requests import MarketOrderRequest, TakeProfitRequest, StopL
 from alpaca.trading.enums import OrderSide, TimeInForce, OrderClass
 from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockBarsRequest
-from alpaca.data.timeframe import TimeFrame
+from alpaca.data.timeframe import TimeFrame, TimeFrameUnit
 
 from poc_amd_strategy import PocAmdStrategy, PocAmdParams
 
@@ -70,7 +70,7 @@ def fetch_bars(data_client: StockHistoricalDataClient, symbol: str) -> pd.DataFr
     start = end - timedelta(days=30)  # 30 days of 30-min bars comfortably covers LOOKBACK_BARS
     req = StockBarsRequest(
         symbol_or_symbols=symbol,
-        timeframe=TimeFrame(30, TimeFrame.Unit.Minute),
+        timeframe=TimeFrame(30, TimeFrameUnit.Minute),
         start=start,
         end=end,
     )
