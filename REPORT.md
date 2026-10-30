@@ -1,14 +1,14 @@
 # POC/AMD Strategy Report
 
-Last updated: 2026-10-29 00:34 UTC
+Last updated: 2026-10-30 00:33 UTC
 
 ```
 
 ============================================================
 POC/AMD STRATEGY - PERFORMANCE REPORT
 ============================================================
-Total logged trades : 6
-Still open           : 3
+Total logged trades : 7
+Still open           : 4
 Lookup failed         : 0
 Closed (have result)  : 3
 
@@ -22,9 +22,10 @@ AMD     BUY   602.10    TARGET (win)   $2.84
 TSLA    BUY   374.49    STOP (loss)    $-1.37    
 PLTR    BUY   195.56    STOP (loss)    $-1.34    
 
-Still open (3):
+Still open (4):
   AAPL SELL @ 333.0 (stop 335.5, target 325.58187499999997)
   AAPL SELL @ 333.0 (stop 335.5, target 325.58187499999997)
   AAPL SELL @ 333.0 (stop 335.5, target 325.58187499999997)
+  AMD SELL @ 562.39 (stop 574.8, target 525.282291666667)
 
 ```
