@@ -1,6 +1,6 @@
 # POC/AMD Strategy Report
 
-Last updated: 2026-11-11 00:59 UTC
+Last updated: 2026-11-12 02:06 UTC
 
 ```
 
